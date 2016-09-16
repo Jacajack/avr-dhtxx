@@ -1,0 +1,6 @@
+*.hex
+*.o
+*.elf
+bin
+lib
+obj
