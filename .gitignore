@@ -4,3 +4,4 @@
 bin
 lib
 obj
+*.gch
