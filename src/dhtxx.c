@@ -1,5 +1,7 @@
 #include <inttypes.h>
+#include <avr/io.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
 
 #include "../include/dhtxx.h"
 
@@ -63,7 +65,12 @@ static uint8_t dhtxxreadb( volatile uint8_t *port, volatile uint8_t *direction, 
 
 uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *direction, volatile uint8_t *portin, uint8_t mask, int *temp, int *humidity )
 {
-	uint8_t tdec, tint, hdec, hint, csum;
+    unsigned char sreg = SREG; //Status register backup
+	uint8_t data[5]; //Data received from sensor
+    uint8_t cs = 0; //Checksum
+    uint8_t i;
+
+    if ( dev != DHTXX_DHT11 && dev != DHTXX_DHT22 ) return DHTXX_ERROR_OTHER;
 
 	//Turn off pull-up, and send 20ms start signal
 	*direction &= ~mask;
@@ -84,15 +91,16 @@ uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *
 	_delay_us( 40 + 80 );
 
 	/*somewhere here real communication begins...*/
-	hint = dhtxxreadb( port, direction, portin, mask );
-	hdec = dhtxxreadb( port, direction, portin, mask );
-	tint = dhtxxreadb( port, direction, portin, mask );
-	tdec = dhtxxreadb( port, direction, portin, mask );
-	csum = dhtxxreadb( port, direction, portin, mask );
+    for ( i = 0; i < 5; i++ )
+        data[i] = dhtxxreadb( port, direction, portin, mask );
 
-	*humidity = hint * 10 + hdec;
-	*temp = tint * 10 + tdec;
+    for ( i = 0; i < 4; i++ )
+        cs += data[i];
 
-	if ( csum != ( ( hint + hdec + tint + tdec ) & 0xFF ) ) return 1;
+    if ( cs != data[4] )
+    {
+        return DHTXX_ERROR_CHECKSUM;
+    }
+
 	return DHTXX_ERROR_OK;
 }
