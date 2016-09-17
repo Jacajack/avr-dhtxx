@@ -61,7 +61,7 @@ static uint8_t dhtxxreadb( volatile uint8_t *port, volatile uint8_t *direction, 
 	return data;
 }
 
-uint8_t dhtxxread( volatile uint8_t *port, volatile uint8_t *direction, volatile uint8_t *portin, uint8_t mask, int *temp, int *humidity )
+uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *direction, volatile uint8_t *portin, uint8_t mask, int *temp, int *humidity )
 {
 	uint8_t tdec, tint, hdec, hint, csum;
 
