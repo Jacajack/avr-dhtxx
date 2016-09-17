@@ -26,10 +26,10 @@ E - 50us of sync impulse
 F - 28us / 70us data impulse
 */
 
-static uint8_t dhtxxreadb( volatile uint8_t *port, volatile uint8_t *direction, volatile uint8_t *portin, uint8_t mask )
+static uint8_t dhtxxreadb( volatile uint8_t *port, volatile uint8_t *direction, volatile uint8_t *portin, uint8_t mask, uint8_t *dest )
 {
-	uint8_t data = 0;
-	uint8_t timeoutcnt = 0;
+    uint8_t data = 0;
+    uint8_t timeoutcnt = 0;
 	uint8_t i = 0;
 
     //Turn pin into input
@@ -43,7 +43,7 @@ static uint8_t dhtxxreadb( volatile uint8_t *port, volatile uint8_t *direction, 
         timeoutcnt = 0;
 		while ( !( *portin & mask ) )
 		{
-			if ( timeoutcnt++ > DHTXX_TIMEOUT ) return 0;
+			if ( timeoutcnt++ > DHTXX_TIMEOUT ) return DHTXX_ERROR_TIMEOUT;
             _delay_us( 1 );
 		}
 
@@ -55,21 +55,25 @@ static uint8_t dhtxxreadb( volatile uint8_t *port, volatile uint8_t *direction, 
         timeoutcnt = 0;
 		while ( *portin & mask )
 		{
-			if ( timeoutcnt++ > DHTXX_TIMEOUT ) return 0;
+			if ( timeoutcnt++ > DHTXX_TIMEOUT ) return DHTXX_ERROR_TIMEOUT;
             _delay_us( 1 );
 		}
 	}
 
-	return data;
+    *dest = data;
+
+	return DHTXX_ERROR_OK;
 }
 
 uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *direction, volatile uint8_t *portin, uint8_t mask, int *temp, int *humidity )
 {
-    unsigned char sreg = SREG; //Status register backup
+    uint8_t sreg = SREG; //Status register backup
 	uint8_t data[5]; //Data received from sensor
     uint8_t cs = 0; //Checksum
+    uint8_t ec = 0;
     uint8_t i;
 
+    //Check if device type is correct
     if ( dev != DHTXX_DHT11 && dev != DHTXX_DHT22 ) return DHTXX_ERROR_OTHER;
 
 	//Turn off pull-up, and send 20ms start signal
@@ -82,23 +86,42 @@ uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *
 	*direction &= ~mask;
 	_delay_us( 30 + 40 );
 
+    //Communication check 1
 	if ( *portin & mask )
 	{
-		//TODO: exit properly here
+		SREG = sreg;
 		return DHTXX_ERROR_COMM;
 	}
 
-	_delay_us( 40 + 80 );
+	_delay_us( 80 );
 
-	/*somewhere here real communication begins...*/
+    //Communication check 2
+    if ( !( *portin & mask ) )
+	{
+		SREG = sreg;
+		return DHTXX_ERROR_COMM;
+	}
+
+    _delay_us( 40 );
+
+	//Read data from sensor
     for ( i = 0; i < 5; i++ )
-        data[i] = dhtxxreadb( port, direction, portin, mask );
+    {
+        ec = dhtxxreadb( port, direction, portin, mask, &data[i] );
 
+        if ( ec )
+        {
+            SREG = sreg;
+            return ec;
+        }
+    }
+
+    //Checksum calculation
     for ( i = 0; i < 4; i++ )
         cs += data[i];
-
     if ( cs != data[4] )
     {
+        SREG = sreg;
         return DHTXX_ERROR_CHECKSUM;
     }
 
