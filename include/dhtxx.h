@@ -8,12 +8,13 @@
 #define DHTXX_ERROR_TIMEOUT 2
 #define DHTXX_ERROR_OTHER 3
 #define DHTXX_ERROR_CHECKSUM 4
+#define DHTXX_OK DHTXX_ERROR_OK
 
 #define DHTXX_DHT11 0
 #define DHTXX_DHT22 1
 
 #define DHTXX_MUL 10
 
-extern uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *direction, volatile uint8_t *portin, uint8_t mask, int *temp, int *humidity );
+extern uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *direction, volatile uint8_t *portin, uint8_t mask, int *temperature, int *humidity );
 
 #endif

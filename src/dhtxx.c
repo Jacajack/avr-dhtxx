@@ -65,7 +65,7 @@ static uint8_t dhtxxreadb( volatile uint8_t *port, volatile uint8_t *direction, 
 	return DHTXX_ERROR_OK;
 }
 
-uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *direction, volatile uint8_t *portin, uint8_t mask, int *temp, int *humidity )
+uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *direction, volatile uint8_t *portin, uint8_t mask, int *temperature, int *humidity )
 {
     uint8_t sreg = SREG; //Status register backup
 	uint8_t data[5]; //Data received from sensor
@@ -138,12 +138,12 @@ uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *
     {
         //Will return humidity*10 and temperature*10
         *humidity = data[0] << 8 | data[1];
-        *temp = data[2] << 8 | data[3];
+        *temperature = data[2] << 8 | data[3];
     }
     else //DHT11
     {
         *humidity = data[0] * 10;
-        *temp = data[2] * 10;
+        *temperature = data[2] * 10;
     }
 
     SREG = sreg;
