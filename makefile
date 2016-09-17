@@ -19,7 +19,7 @@ all: force obj/dhtxx.o
 
 obj/dhtxx.o: src/dhtxx.o
 	$(CC) $(CFLAGS) -c src/dhtxx.c -o obj/dhtxx.o
-	avr-size -C --mcu=$(MCU) obj/dht11.o
+	avr-size -C --mcu=$(MCU) obj/dhtxx.o
 
 force:
 	-mkdir obj
