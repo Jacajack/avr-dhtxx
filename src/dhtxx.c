@@ -125,5 +125,16 @@ uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *
         return DHTXX_ERROR_CHECKSUM;
     }
 
+    //Output values
+    if ( dev == DHTXX_DHT22 ) //DHT22
+    {
+        *humidity = data[0] << 8 | data[1];
+        *temp = data[2] << 8 | data[3];
+    }
+    else //DHT11
+    {
+
+    }
+
 	return DHTXX_ERROR_OK;
 }
