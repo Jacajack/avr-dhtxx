@@ -76,11 +76,19 @@ uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *
     //Check if device type is correct
     if ( dev != DHTXX_DHT11 && dev != DHTXX_DHT22 ) return DHTXX_ERROR_OTHER;
 
+    //Disable interrupts
+    cli( );
+
 	//Turn off pull-up, and send 20ms start signal
 	*direction &= ~mask;
 	*port &= ~mask;
 	*direction |= mask;
-	_delay_ms( 20 );
+
+    //Adjust start signal time for DHT11 and DHT22
+    if ( dev == DHTXX_DHT22 )
+        _delay_us( 500 );
+    else
+        _delay_ms( 18 );
 
 	//Turn pin into input and wait for acknowledgement
 	*direction &= ~mask;
@@ -128,13 +136,16 @@ uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *
     //Output values
     if ( dev == DHTXX_DHT22 ) //DHT22
     {
+        //Will return humidity*10 and temperature*10
         *humidity = data[0] << 8 | data[1];
         *temp = data[2] << 8 | data[3];
     }
     else //DHT11
     {
-
+        *humidity = data[0] * 10;
+        *temp = data[2] * 10;
     }
 
+    SREG = sreg;
 	return DHTXX_ERROR_OK;
 }

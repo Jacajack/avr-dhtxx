@@ -12,6 +12,8 @@
 #define DHTXX_DHT11 0
 #define DHTXX_DHT22 1
 
+#define DHTXX_MUL 10
+
 extern uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *direction, volatile uint8_t *portin, uint8_t mask, int *temp, int *humidity );
 
 #endif
