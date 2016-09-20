@@ -8,9 +8,10 @@
 
 F_CPU =
 MCU =
+DHTXX_TIMEOUT =
 
 CC = avr-gcc
-CFLAGS = -Wall -DF_CPU=$(F_CPU) -mmcu=$(MCU) -Os
+CFLAGS = -Wall -DDHTXX_TIMEOUT=$(DHTXX_TIMEOUT) -DF_CPU=$(F_CPU) -mmcu=$(MCU) -Os
 
 LD = avr-ld
 LDFLAGS =
@@ -21,6 +22,10 @@ endif
 
 ifndef MCU
 $(error MCU is not set!)
+endif
+
+ifndef DHTXX_TIMEOUT
+$(warning DHTXX_TIMEOUT not set! Default value is 60...)
 endif
 
 all: force obj/dhtxx.o
