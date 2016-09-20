@@ -26,6 +26,7 @@ endif
 
 ifndef DHTXX_TIMEOUT
 $(warning DHTXX_TIMEOUT not set! Default value is 60...)
+DHTXX_TIMEOUT = 60
 endif
 
 all: force obj/dhtxx.o
