@@ -62,7 +62,9 @@ Every function also returns an error code (`uint8_t`):
 |3|`DHTXX_ERROR_OTHER`|Some other error occurred - e.g. user tried to specify device other than `DHTXX_DHT11` or `DHTXX_DTH22`|
 
 Library can be easily compiled using included `makefile`. `F_CPU` and `MCU` values should be specified when calling `make`:
+
 `make F_CPU=16000000U MCU=atmega328p`
+
 `DHTXX_TIMEOUT` value can be set too. It describes communication timeout in more or less microseconds. Default value is 60.
 
 To understand how library works better, remember to take a look at `dhtxx.c` and `dhtxx.h`.
