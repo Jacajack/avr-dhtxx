@@ -32,7 +32,12 @@ int main( )
 
 As you can see, code is very simple. Library itself consists of two functions:
  - `dhtxxconvert( ... )` - sends request pulse to sensor in order to start data conversion.
- - `dhtxxread( ... )` - reads humidity and temperature data from sensor. Received data is stored in two `int` variables specified by pointers. Temperature and humidity values returned are multiplied by 10. For instance, temperature value 230 actually means 23.0&deg;C. Also, returned values come from last conversion, so if you want fresh data, `dhtxxconvert` should be called >1s before reading data. Anyway, always take a look at datasheet.
+ - `dhtxxread( ... )` - reads humidity and temperature data from sensor and triggers data conversion (**old data is returned**).
+
+Data received by `dhtxxread` is stored in two `int` variables specified by pointers passed as arguments to the function.
+Temperature and humidity values returned are multiplied by 10. For instance, temperature value 230 actually means 23.0&deg;C.
+Also, returned values come from last conversion, so if you want fresh data, `dhtxxconvert` should be called >1s before reading data with `dhtxxread`.
+Anyway, always remember to take a look at datasheet.
 
 Each function takes following arguments:
  - sensor type (`DHTXX_DHT11` or `DHTXX_DTH22`)
@@ -47,7 +52,7 @@ And then, in case of `dhtxxread`:
 
 It is worth mentioning, that both functions disable interrupts in timing-crucial code fragments, but before they exit `SREG` value is restored.
 
-Every function also returns an error code:
+Every function also returns an error code (`uint8_t`):
 
 |Value|Macro|Description|
 |:---:|:---:|-----------|
@@ -58,3 +63,6 @@ Every function also returns an error code:
 
 Library can be easily compiled using included `makefile`. `F_CPU` and `MCU` values should be specified when calling `make`:
 `make F_CPU=16000000U MCU=atmega328p`
+`DHTXX_TIMEOUT` value can be set too. It describes communication timeout in more or less microseconds. Default value is 60.
+
+To understand how library works better, remember to take a look at `dhtxx.c` and `dhtxx.h`.
