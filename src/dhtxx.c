@@ -96,8 +96,8 @@ uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *
         _delay_ms( 18 );
 
 	//Turn pin into input, disable interrupts and wait for acknowledgement
-	*direction &= ~mask;
 	cli( );
+	*direction &= ~mask;
 	_delay_us( 30 + 40 );
 
     //Communication check 1
@@ -160,6 +160,8 @@ uint8_t dhtxxconvert( unsigned char dev, volatile uint8_t *port, volatile uint8_
 {
 	//Requests DHTxx device, but does not read the data (simply triggers conversion)
 
+	uint8_t sreg = SREG; //Status register backup
+
 	//Check if device type is correct
     if ( dev != DHTXX_DHT11 && dev != DHTXX_DHT22 ) return DHTXX_ERROR_OTHER;
 
@@ -174,8 +176,18 @@ uint8_t dhtxxconvert( unsigned char dev, volatile uint8_t *port, volatile uint8_
     else
         _delay_ms( 18 );
 
-	//Turn pin into input and wait for acknowledgement
+	//Turn pin into input, disable interrupts and wait for acknowledgement
+	cli( );
 	*direction &= ~mask;
+	_delay_us( 30 + 40 );
 
+    //Communication check 1
+	if ( *portin & mask )
+	{
+		SREG = sreg;
+		return DHTXX_ERROR_COMM;
+	}
+
+	SREG = sreg;
 	return DHTXX_ERROR_OK;
 }

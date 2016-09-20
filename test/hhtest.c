@@ -3,7 +3,7 @@
 #include <stdio.h>
 #define UBAUD F_CPU / 16 / 9600 - 1
 
-#include "../include/dht11.h"
+#include "../include/dhtxx.h"
 
 void cominit( )
 {
@@ -27,17 +27,21 @@ void comsend( const char *text )
 int main( )
 {
 	char buff[128];
-	unsigned char humid, temp, ec;
+	unsigned char  ec;
+	int temp, humid;
 
 	cominit( );
 
 	DDRD |= ( 1 << 4 ) | ( 1 << 2 );
 	while( 1 )
 	{
-		_delay_ms( 2000 );
+		for ( ec = 0; ec < 4; ec++ )
+			_delay_ms( 1000 );
 
+		dhtxxconvert( DHTXX_DHT22, &PORTC, &DDRC, &PINC, ( 1 << 0 ) );
 		PORTD |= ( 1 << 2 );
-		ec = dht11read( &PORTC, &DDRC, &PINC, ( 1 << 0 ), &temp, &humid );
+		_delay_ms( 1000 );
+		ec = dhtxxread( DHTXX_DHT22, &PORTC, &DDRC, &PINC, ( 1 << 0 ), &temp, &humid );
 		PORTD &= ~( 1 << 2 );
 
 		PORTD |= ( 1 << 4 );
