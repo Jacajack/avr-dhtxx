@@ -55,3 +55,6 @@ Every function also returns an error code:
 |1|`DHTXX_ERROR_COMM`|Communication error occurred - sensor did not respond or transmission had been interrupted|
 |2|`DHTXX_ERROR_CHECKSUM`|Received checksum is invalid|
 |3|`DHTXX_ERROR_OTHER`|Some other error occurred - e.g. user tried to specify device other than `DHTXX_DHT11` or `DHTXX_DTH22`|
+
+Library can be easily compiled using included `makefile`. `F_CPU` and `MCU` values should be specified when calling `make`:
+`make F_CPU=16000000U MCU=atmega328p`
