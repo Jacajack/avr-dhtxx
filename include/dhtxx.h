@@ -24,5 +24,6 @@
 #define DHTXX_MUL 10
 
 extern uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *direction, volatile uint8_t *portin, uint8_t mask, int *temperature, int *humidity );
+extern uint8_t dhtxxconvert( unsigned char dev, volatile uint8_t *port, volatile uint8_t *direction, volatile uint8_t *portin, uint8_t mask );
 
 #endif

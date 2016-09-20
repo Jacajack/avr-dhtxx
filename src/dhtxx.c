@@ -84,10 +84,7 @@ uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *
     //Check if device type is correct
     if ( dev != DHTXX_DHT11 && dev != DHTXX_DHT22 ) return DHTXX_ERROR_OTHER;
 
-    //Disable interrupts
-    cli( );
-
-	//Turn off pull-up, and send 20ms start signal
+	//Send start signal
 	*direction &= ~mask;
 	*port &= ~mask;
 	*direction |= mask;
@@ -98,8 +95,9 @@ uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *
     else
         _delay_ms( 18 );
 
-	//Turn pin into input and wait for acknowledgement
+	//Turn pin into input, disable interrupts and wait for acknowledgement
 	*direction &= ~mask;
+	cli( );
 	_delay_us( 30 + 40 );
 
     //Communication check 1
@@ -155,5 +153,29 @@ uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *
     }
 
     SREG = sreg;
+	return DHTXX_ERROR_OK;
+}
+
+uint8_t dhtxxconvert( unsigned char dev, volatile uint8_t *port, volatile uint8_t *direction, volatile uint8_t *portin, uint8_t mask )
+{
+	//Requests DHTxx device, but does not read the data (simply triggers conversion)
+
+	//Check if device type is correct
+    if ( dev != DHTXX_DHT11 && dev != DHTXX_DHT22 ) return DHTXX_ERROR_OTHER;
+
+	//Send start signal
+	*direction &= ~mask;
+	*port &= ~mask;
+	*direction |= mask;
+
+    //Adjust start signal time for DHT11 and DHT22
+    if ( dev == DHTXX_DHT22 )
+        _delay_us( 500 );
+    else
+        _delay_ms( 18 );
+
+	//Turn pin into input and wait for acknowledgement
+	*direction &= ~mask;
+
 	return DHTXX_ERROR_OK;
 }
