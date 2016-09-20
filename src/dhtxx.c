@@ -51,7 +51,7 @@ static uint8_t dhtxxreadb( volatile uint8_t *port, volatile uint8_t *direction, 
         timeoutcnt = 0;
 		while ( !( *portin & mask ) )
 		{
-			if ( timeoutcnt++ > DHTXX_TIMEOUT ) return DHTXX_ERROR_TIMEOUT;
+			if ( timeoutcnt++ > DHTXX_TIMEOUT ) return DHTXX_ERROR_COMM;
             _delay_us( 1 );
 		}
 
@@ -63,7 +63,7 @@ static uint8_t dhtxxreadb( volatile uint8_t *port, volatile uint8_t *direction, 
         timeoutcnt = 0;
 		while ( *portin & mask )
 		{
-			if ( timeoutcnt++ > DHTXX_TIMEOUT ) return DHTXX_ERROR_TIMEOUT;
+			if ( timeoutcnt++ > DHTXX_TIMEOUT ) return DHTXX_ERROR_COMM;
             _delay_us( 1 );
 		}
 	}
