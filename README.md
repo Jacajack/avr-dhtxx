@@ -32,7 +32,7 @@ int main( )
 
 As you can see, code is very simple. Library itself consists of two functions:
  - `dhtxxconvert( ... )` - sends request pulse to sensor in order to start data conversion.
- - `dhtxxread( ... )` - reads humidity and temperature data from sensor and triggers data conversion (**old data is returned**).
+ - `dhtxxread( ... )` - reads humidity and temperature data from sensor and triggers data conversion (data from previous conversion is returned).
 
 Data received by `dhtxxread` is stored in two `int` variables specified by pointers passed as arguments to the function.
 Temperature and humidity values returned are multiplied by 10. For instance, temperature value 230 actually means 23.0&deg;C.
