@@ -36,9 +36,13 @@ F - 28us / 70us data impulse
 
 static uint8_t dhtxxreadb( volatile uint8_t *port, volatile uint8_t *direction, volatile uint8_t *portin, uint8_t mask, uint8_t *dest )
 {
+	uint8_t sreg = SREG; //Backup status register
     uint8_t data = 0;
     uint8_t timeoutcnt = 0;
 	uint8_t i = 0;
+
+	//Disable interrupts
+	cli( );
 
     //Turn pin into input
 	*direction &= ~mask;
@@ -70,6 +74,7 @@ static uint8_t dhtxxreadb( volatile uint8_t *port, volatile uint8_t *direction, 
 
     *dest = data;
 
+	SREG = sreg;
 	return DHTXX_ERROR_OK;
 }
 
@@ -116,28 +121,22 @@ uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *
 		return DHTXX_ERROR_COMM;
 	}
 
+	//Restore interrupts status
+	SREG = sreg;
     _delay_us( 40 );
 
 	//Read data from sensor
     for ( i = 0; i < 5; i++ )
     {
         ec = dhtxxreadb( port, direction, portin, mask, &data[i] );
-
-        if ( ec )
-        {
-            SREG = sreg;
-            return ec;
-        }
+        if ( ec ) return ec;
     }
 
     //Checksum calculation
     for ( i = 0; i < 4; i++ )
         cs += data[i];
     if ( cs != data[4] )
-    {
-        SREG = sreg;
         return DHTXX_ERROR_CHECKSUM;
-    }
 
     //Output values
     if ( dev == DHTXX_DHT22 ) //DHT22
@@ -152,7 +151,6 @@ uint8_t dhtxxread( unsigned char dev, volatile uint8_t *port, volatile uint8_t *
         *temperature = data[2] * 10;
     }
 
-    SREG = sreg;
 	return DHTXX_ERROR_OK;
 }
 
