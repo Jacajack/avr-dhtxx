@@ -5,3 +5,5 @@ bin
 lib
 obj
 *.gch
+*.a
+lib
