@@ -16,28 +16,36 @@ CFLAGS = -Wall -DDHTXX_TIMEOUT=$(DHTXX_TIMEOUT) -DF_CPU=$(F_CPU) -mmcu=$(MCU) -O
 LD = avr-ld
 LDFLAGS =
 
+ifneq ($(MAKECMDGOALS),clean)
 ifndef F_CPU
 $(error F_CPU is not set!)
 endif
-
 ifndef MCU
 $(error MCU is not set!)
 endif
-
 ifndef DHTXX_TIMEOUT
 $(warning DHTXX_TIMEOUT not set! Default value is 60...)
 DHTXX_TIMEOUT = 60
 endif
+endif
 
-all: force obj/dhtxx.o
+all: force obj/dhtxx.o lib/libdhtxx.a end
 
-obj/dhtxx.o: src/dhtxx.o
+lib/libdhtxx.a: obj/dhtxx.o
+	avr-ar -cvq lib/libdhtxx.a obj/dhtxx.o
+	avr-ar -t  lib/libdhtxx.a
+
+obj/dhtxx.o: src/dhtxx.c
 	$(CC) $(CFLAGS) -c src/dhtxx.c -o obj/dhtxx.o
-	avr-size -C --mcu=$(MCU) obj/dhtxx.o
 
 force:
 	-mkdir obj
 	-mkdir obj/tmp
+	-mkdir lib
 
 clean:
 	-rm -rf obj
+	-rm -rf lib
+
+end:
+	avr-size -C --mcu=$(MCU) obj/dhtxx.o
