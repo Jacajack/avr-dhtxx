@@ -29,7 +29,7 @@ DHTXX_TIMEOUT = 60
 endif
 endif
 
-all: clean force obj/dhtxx.o lib/libdhtxx.a end
+all: force obj/dhtxx.o lib/libdhtxx.a end
 
 lib/libdhtxx.a: obj/dhtxx.o
 	avr-ar -cvq lib/libdhtxx.a obj/dhtxx.o
