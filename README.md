@@ -36,8 +36,8 @@ As you can see, code is very simple. Library itself consists of two functions:
 
 Data received by `dhtxxread` is stored in two `int` variables specified by pointers passed as arguments to the function.
 Temperature and humidity values returned are multiplied by 10. For instance, temperature value 230 actually means 23.0&deg;C.
-Also, returned values come from last conversion, so if you want fresh data, `dhtxxconvert` should be called >1s before reading data with `dhtxxread`. It's also important to keep in mind that enabling interrupts before calling `dhtxxread` will cause interrupts to be enabled between receiving single bytes, so please disable them manually if interrupt code lasts longer than ~50µs.
-By the way, always remember to take a look at datasheet.
+Returned values come from last conversion, so if you want fresh data, `dhtxxconvert` should be called >1s before reading data with `dhtxxread`. It's important to keep in mind that enabling interrupts before calling `dhtxxread` will cause interrupts to be enabled between receiving single bytes, so please disable them manually if interrupt code lasts longer than ~50µs.
+Please always remember to take a look at datasheet.
 
 Each function takes following arguments:
  - sensor type (`DHTXX_DHT11` or `DHTXX_DTH22`)
